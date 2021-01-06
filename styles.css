@@ -5,7 +5,7 @@
 
 .grid-controller {
     display: grid;
-    grid-template-columns: 100px 100px 100px;
+    grid-template-columns: 200px 200px 200px;
     padding: 10px;
     justify-content: center;
   }
@@ -13,4 +13,5 @@
   .grid-item {
     font-size: 30px;
     text-align: center;
+    display: grid;
   }
