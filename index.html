@@ -8,29 +8,13 @@
     <div class="container-text-center">
         <div class="row">
             <div class="col-sm-12">
-                <iframe class="jitsi-window" src="https://meet.mintclub.org/" allow="camera;microphone" height=600px width=1000px></iframe>
+                <iframe id="ifrm" class="jitsi-window" src="https://meet.mintclub.org" allow="camera;microphone" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;"></iframe>
             </div>
         </div>
     </div>
-    <div class="grid-controller">
-        <div class="grid-item"></div>
-        <div class="grid-item">
-            <button type="button" id="forward">Vorwaerts</button>
-        </div>
-        <div class="grid-item"></div>
-        <div class="grid-item">
-            <button type="button" id="left">Links</button>
-        </div>
-	<div class="grid-item"></div>
-        <div class="grid-item">
-            <button type="button" id="right">Rechts</button>
-        </div>
-	<div class="grid-item"></div>
-	<div class="grid-item">
-            <button type="button" id="backward">Rueckwaerts</button>
-        </div>
-	<div class="grid-item"></div>
-    </div>
+	<div id="container-joystick"></div>
+	<div id="joystick"></div>
+	<script src='https://yoannmoinet.github.io/nipplejs/javascripts/nipplejs.js'></script>
     <script src="script.js"></script>
 </body>
 </html>
