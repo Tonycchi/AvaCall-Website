@@ -3,8 +3,8 @@ const fs = require('fs');
 const WebSocket = require('ws');
 
 const server = new https.createServer({
-	cert: fs.readFileSync('/etc/letsencrypt/live/mintclub.org/fullchain.pem'),
-	key: fs.readFileSync('/etc/letsencrypt/live/mintclub.org/privkey.pem')
+	cert: fs.readFileSync('/etc/letsencrypt/live/avatar.mintclub.org/fullchain.pem'),
+	key: fs.readFileSync('/etc/letsencrypt/live/avatar.mintclub.org/privkey.pem')
 });
 
 const wss = new WebSocket.Server({ server });

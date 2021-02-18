@@ -29,13 +29,13 @@ manager.on('end', function(evt) {
 });
 
 ws.onopen = function() {
-	ws.send("site:" + window.location.pathname.split('/')[1]);
-	//ws.send(window.location.href);
+	ws.send("site");
+	ws.send(window.location.href);
 };
 
 ws.onmessage = function (evt) {
 	url = evt.data;
 	console.log(url);
-	document.getElementById("ifrm").src = "https://" + url + window.location.pathname;
+	document.getElementById("ifrm").src = url + window.location.pathname;
 	document.getElementById('joystick').style.visibility = "visible";
 };
