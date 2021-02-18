@@ -1,6 +1,6 @@
 var url;
  
-var ws = new WebSocket("wss://mintclub.org:22222");
+var ws = new WebSocket("wss://avatar.mintclub.org:22222");
 
 var options = {
 	zone: document.getElementById('joystick'),
