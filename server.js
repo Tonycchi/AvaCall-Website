@@ -8,44 +8,89 @@ const server = new https.createServer({
 });
 
 const wss = new WebSocket.Server({ server });
-appClients=[];
-avatarURLs=[];
-jitsiURLs=[];
+appClients = {};
+webClients = {};
+jitsiURLs = {};
+IDs = [];
 
-wss.on('connection', function(ws) {
+wss.on('connection', function(ws, request, client) {
     ws.on('message', function(message) {
-	if (message == 'app') {
-	    appClients.push(ws);
-		console.log("App connected");
-		ws.on('message', function(URL) {
-			if (URL.includes("avatar.mintclub.org")) {
-					avatarURLs.push(URL);
-					console.log("Pushed avatarURL");
-			} else {
-					jitsiURLs.push(URL);
-					console.log("Pushed jitsiURL");
-			}	
-	    });
-	} else if (message == 'site') {
-		var connectedAppClient;
-	    console.log("Website connected");
-		ws.on('message', function(message) {
-			if (message.includes("avatar.mintclub.org")) {
-				for (var i=0; i<avatarURLs.length; i++) {
-					if (message == avatarURLs[i]) {
-						ws.send(jitsiURLs[i]);
-						connectedAppClient = appClients[i];
-						console.log("Connected to App");
-						break;
-					}
-				}
-			} else if (connectedAppClient != null) {
-				connectedAppClient.send(message);
-				console.log("Sent: " + message);
-			}
-		});
-	}
+        if (!message.includes(";")) console.log(message);
+        if (message.startsWith('app:')) {
+            id = randomID(10);
+            IDs.push(id);
+            
+            jitsiURLs[id] = message.split(':')[1];
+            
+            appClients[id] = ws;
+            appClients[id].myid = id;
+               
+            appClients[id].send('data:' + id);
+            
+            appClients[id].on('close', function() {
+                removeSession(this.myid)
+                
+                delete appClients[id];
+            });
+        } else if (message.startsWith('site:')) {
+            id = message.split(':')[1];
+            if (appClients[id] != null && webClients[id] == null) {
+                webClients[id] = ws;
+                webClients[id].myid = id;
+                webClients[id].send(jitsiURLs[id]);
+                
+                /*appClients[id].on('message', function(m) {
+                    webClients[this.myid].send(m);
+                });*/
+                webClients[id].on('message', function(m) {
+                    appClients[this.myid].send(m);
+                });
+                webClients[id].on('close', function() {
+                    removeSession(this.myid)
+                    
+                    delete webClients[this.myid];
+                });
+            } else if (appClients[id] != null) {
+                // Trifft ein wenn schon ein webClient mit der App verbunden ist
+                ws.send(jitsiURLs[id] + "/");
+            }
+        }
+        if (!message.includes(";")) console.log(countProperties(appClients) + ", " + countProperties(webClients))
     });
 });
+
+function removeSession(id) {
+    if (appClients[id] == null || webClients[id] == null) {
+        delete jitsiURLs[id];
+        var index = IDs.indexOf(id);
+        if (index > -1) {
+            IDs.splice(index, 1);
+        }
+    }
+    console.log(countProperties(appClients) + ", " + countProperties(webClients));
+}
+
+function randomID(length) {
+    var result           = '';
+    var characters       = 'abcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    do {
+        for ( var i = 0; i < length; i++ ) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+    } while (IDs.includes(result));
+    return result;
+}
+
+function countProperties(obj) {
+    var count = 0;
+
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            ++count;
+    }
+
+    return count;
+}
 
 server.listen(22222);
