@@ -15,7 +15,7 @@ IDs = [];
 
 wss.on('connection', function(ws, request, client) {
     ws.on('message', function(message) {
-        if (!message.includes(";")) console.log(message);
+        console.log(message);
         if (message.startsWith('app:')) {
             id = randomID(10);
             IDs.push(id);
@@ -25,10 +25,10 @@ wss.on('connection', function(ws, request, client) {
             appClients[id] = ws;
             appClients[id].myid = id;
                
-            appClients[id].send('data:' + id);
+            appClients[id].send('id:' + id);
             
             appClients[id].on('close', function() {
-                removeSession(this.myid)
+                removeSession(this.myid);
                 
                 delete appClients[id];
             });
@@ -43,10 +43,16 @@ wss.on('connection', function(ws, request, client) {
                     webClients[this.myid].send(m);
                 });*/
                 webClients[id].on('message', function(m) {
-                    appClients[this.myid].send(m);
+                    if (appClients[this.myid] != null) {
+                        appClients[this.myid].send(m);  
+                    } else {
+                        removeSession(this.myid);
+                        
+                        delete webClients[this.myid];
+                    }
                 });
                 webClients[id].on('close', function() {
-                    removeSession(this.myid)
+                    removeSession(this.myid);
                     
                     delete webClients[this.myid];
                 });

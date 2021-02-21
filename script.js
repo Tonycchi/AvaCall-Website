@@ -39,3 +39,49 @@ ws.onmessage = function (evt) {
 	document.getElementById("ifrm").src = "https://" + url + window.location.pathname;
 	document.getElementById('joystick').style.visibility = "visible";
 };
+
+let keysPressed = {};
+
+//37 is left, 38 is up, 39 is right, 40 is down
+
+
+
+document.addEventListener('keydown', testFunction);
+
+document.addEventListener('keyup', testFunction);
+
+function testFunction(e) {
+	alert("Taste gedrückt");
+	e = e || window.event;
+	keysPressed[e.keyCode] = e.type == 'keydown';
+	
+	var x = 0;
+	var y = 0;
+	
+	if (keysPressed[37]) {
+		x = x - 1;
+	}
+	if (keysPressed[39]) {
+		x = x + 1;
+	}
+	if (keysPressed[38]) {
+		y = y + 1;
+	}
+	if (keysPressed[40]) {
+		y = y - 1;
+	}
+	
+	var angle = 0;
+	var strength = 100;
+	
+	if (x == 0 && y == 0) {
+		strength = 0;
+	} else if (y == 1) {
+		angle = 90 - x*45;
+	} else if (y == -1) {
+		angle = 270 + x*45;
+	} else if (x == -1) {
+		angle = 180;
+	}
+	ws.send(angle + ";" + strength);
+}
