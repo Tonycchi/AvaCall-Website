@@ -1,32 +1,35 @@
 var url;
- 
+
+
 var ws = new WebSocket("wss://avatar.mintclub.org:22222");
+
+var optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
+var joystickSizeFactor = 0.1;
 
 var options = {
 	zone: document.getElementById('joystick'),
     mode: 'static',
-    position: {right: '27%', bottom: '17%'},
-	color: 'SpringGreen'
+    position: {right: '27%', bottom: '25%'},
+	color: 'SpringGreen',
+	size: optimalSize * joystickSizeFactor
 };
 
-var manager = nipplejs.create(options);
+var manager;
 
-manager.on('start', function(evt) {
-	document.getElementById('container-joystick').style.visibility = "visible";
-});
+setManagerEvents();
 
-manager.on('move', function(evt, data) {
-	angle = parseInt(data.angle.degree);
-	distance = parseInt(data.distance*2);
-	console.log(angle + ";" + distance);
-	ws.send(angle + ";" + distance);
-	console.log("send");
-});
-
-manager.on('end', function(evt) {
-	document.getElementById('container-joystick').style.visibility = "hidden";
-	ws.send("0;0");
-});
+window.onresize = function() {
+	optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
+	manager.destroy();
+	options = {
+		zone: document.getElementById('joystick'),
+		mode: 'static',
+		position: {right: '27%', bottom: '25%'},
+		color: 'SpringGreen',
+		size: optimalSize * joystickSizeFactor
+	};
+	setManagerEvents();
+};
 
 ws.onopen = function() {
 	ws.send("site:" + window.location.pathname.split('/')[1]);
@@ -40,48 +43,23 @@ ws.onmessage = function (evt) {
 	document.getElementById('joystick').style.visibility = "visible";
 };
 
-let keysPressed = {};
+function setManagerEvents() {
+	manager = nipplejs.create(options);
 
-//37 is left, 38 is up, 39 is right, 40 is down
-
-
-
-document.addEventListener('keydown', testFunction);
-
-document.addEventListener('keyup', testFunction);
-
-function testFunction(e) {
-	alert("Taste gedrückt");
-	e = e || window.event;
-	keysPressed[e.keyCode] = e.type == 'keydown';
+	manager.on('start', function(evt) {
+		document.getElementById('container-joystick').style.visibility = "visible";
+	});
 	
-	var x = 0;
-	var y = 0;
+	manager.on('move', function(evt, data) {
+		angle = parseInt(data.angle.degree);
+		distance = parseInt(data.distance * 2 / (options.size/100));
+		console.log(angle + ";" + distance);
+		ws.send(angle + ";" + distance);
+		console.log("send");
+	});
 	
-	if (keysPressed[37]) {
-		x = x - 1;
-	}
-	if (keysPressed[39]) {
-		x = x + 1;
-	}
-	if (keysPressed[38]) {
-		y = y + 1;
-	}
-	if (keysPressed[40]) {
-		y = y - 1;
-	}
-	
-	var angle = 0;
-	var strength = 100;
-	
-	if (x == 0 && y == 0) {
-		strength = 0;
-	} else if (y == 1) {
-		angle = 90 - x*45;
-	} else if (y == -1) {
-		angle = 270 + x*45;
-	} else if (x == -1) {
-		angle = 180;
-	}
-	ws.send(angle + ";" + strength);
-}
+	manager.on('end', function(evt) {
+		document.getElementById('container-joystick').style.visibility = "hidden";
+		ws.send("0;0");
+	});
+};

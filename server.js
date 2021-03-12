@@ -21,6 +21,7 @@ wss.on('connection', function(ws, request, client) {
             IDs.push(id);
             
             jitsiURLs[id] = message.split(':')[1];
+			console.log(jitsiURLs[id]);
             
             appClients[id] = ws;
             appClients[id].myid = id;
