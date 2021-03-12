@@ -2,6 +2,7 @@ const https = require('https');
 const fs = require('fs');
 const WebSocket = require('ws');
 
+const PORT = 22222;
 const server = new https.createServer({
 	cert: fs.readFileSync('/etc/letsencrypt/live/avatar.mintclub.org/fullchain.pem'),
 	key: fs.readFileSync('/etc/letsencrypt/live/avatar.mintclub.org/privkey.pem')
@@ -100,4 +101,4 @@ function countProperties(obj) {
     return count;
 }
 
-server.listen(22222);
+server.listen(PORT);
