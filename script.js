@@ -1,15 +1,19 @@
 var url;
 
-
 var ws = new WebSocket("wss://avatar.mintclub.org:22222");
 
 var optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
-var joystickSizeFactor = 0.1;
-
+var capValue = (screen.height > screen.width) ? screen.height : screen.width;
+var bottomPercent = '35%';
+if (capValue > 1900) {
+	optimalSize = 1200 * optimalSize / capValue;
+	bottomPercent = '25%';
+}
+var joystickSizeFactor = 0.25;
 var options = {
 	zone: document.getElementById('joystick'),
-    mode: 'static',
-    position: {right: '27%', bottom: '25%'},
+    	mode: 'static',
+    	position: {right: '27%', bottom: bottomPercent},
 	color: 'SpringGreen',
 	size: optimalSize * joystickSizeFactor
 };
@@ -20,11 +24,17 @@ setManagerEvents();
 
 window.onresize = function() {
 	optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
+	capValue = (screen.height > screen.width) ? screen.height : screen.width;
+	bottomPercent = '35%';
+	if (capValue > 1900) {
+		optimalSize = 1200 * optimalSize / capValue;
+		bottomPercent = '25%';
+	}
 	manager.destroy();
 	options = {
 		zone: document.getElementById('joystick'),
 		mode: 'static',
-		position: {right: '27%', bottom: '25%'},
+		position: {right: '27%', bottom: bottomPercent},
 		color: 'SpringGreen',
 		size: optimalSize * joystickSizeFactor
 	};
