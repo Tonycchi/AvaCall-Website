@@ -11,5 +11,10 @@
 }
 
 #joystick {
-	visibility: visible;
+	visibility: hidden;
 } 
+
+.center {
+	border: 5px solid #0080FF;
+	text-align: center;
+}
