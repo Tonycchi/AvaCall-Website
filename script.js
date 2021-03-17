@@ -5,7 +5,7 @@ var ws = new WebSocket("wss://avatar.mintclub.org:22222");
 var optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
 var capValue = (screen.height > screen.width) ? screen.height : screen.width;
 var bottomPercent = '35%';
-if (capValue > 1900) {
+if (capValue > 1400) {
 	optimalSize = 1200 * optimalSize / capValue;
 	bottomPercent = '25%';
 }
@@ -26,7 +26,7 @@ window.onresize = function() {
 	optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
 	capValue = (screen.height > screen.width) ? screen.height : screen.width;
 	bottomPercent = '35%';
-	if (capValue > 1900) {
+	if (capValue > 1400) {
 		optimalSize = 1200 * optimalSize / capValue;
 		bottomPercent = '25%';
 	}

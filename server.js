@@ -41,9 +41,6 @@ wss.on('connection', function(ws, request, client) {
                 webClients[id].myid = id;
                 webClients[id].send(jitsiURLs[id]);
                 
-                /*appClients[id].on('message', function(m) {
-                    webClients[this.myid].send(m);
-                });*/
                 webClients[id].on('message', function(m) {
                     if (appClients[this.myid] != null) {
                         appClients[this.myid].send(m);  
@@ -59,7 +56,7 @@ wss.on('connection', function(ws, request, client) {
                     delete webClients[this.myid];
                 });
             } else if (appClients[id] != null) {
-                // Trifft ein wenn schon ein webClient mit der App verbunden ist
+                // Happens if a webClient is already connected with the app
                 ws.send(jitsiURLs[id] + "/");
             }
         }
