@@ -72,7 +72,7 @@ function setManagerEvents() {
 	});
 	
 	// Function when the joystick is moved
-	// Gets the angle and distance from the joystick and sends it to the WebSocket Server
+	// Gets joystick data and sends it to the WebSocket Server
 	manager.on('move', function(evt, data) {
 		angle = parseInt(data.angle.degree);
 		distance = parseInt(data.distance * 2 / (options.size/100));
@@ -83,7 +83,7 @@ function setManagerEvents() {
 	
 	// Function when the joystick is released 
 	// Makes the container-joystick hidden so that you can use the buttons on the iFrame again
-	// Sends a stop signal which prevents the Mindstorms from moving infinitely
+	// Sends a stop signal so the Mindstorm doesn't continue to move
 	manager.on('end', function(evt) {
 		document.getElementById('container-joystick').style.visibility = "hidden";
 		ws.send("0;0");
