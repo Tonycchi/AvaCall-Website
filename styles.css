@@ -3,18 +3,78 @@
 	display: block;
 }
 
-#container-joystick {
+#container-control-elements {
 	visibility: hidden;
 	position: fixed;
 	width: 100%;
 	height: 100%;
 }
 
+#grid-container-buttons {
+	display: grid;
+	position: absolute;
+	grid-template-columns: auto auto;
+	grid-row-gap: 50%;
+	width: 15%;
+	top: 10%;
+	right: 10%;
+}
+
+#grid-container-sliders {
+	display: grid;
+	position: absolute;
+	grid-template-columns: auto auto auto auto;
+	width: 10%;
+	bottom: 25%;
+	left: 5%
+}
+
 #joystick {
-	visibility: hidden;
+	visibility: visible;
 } 
 
-.center {
-	border: 5px solid #0080FF;
-	text-align: center;
+#button {
+	visibility: visible;
+	height: 5%;
+	width: 10%;
+	font-size: 2vmin;
+	position: fixed;
+	right: 10.75%;
+	top: 10%;
+	background-color: PaleGreen;
+	border-color: PaleGreen;
+	border-radius: 10px;
+}
+
+.slider {
+	visibility: visible;
+	-webkit-appearance: none;
+	height: 2%;
+	width: 15%;
+	position: fixed;
+	right: 8%;
+	top: 35%;
+	background: #d3d3d3;
+	transform: rotate(270deg);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 50px;
+  width: 16px;
+  border-radius: 3px;
+  background: PaleGreen;
+  cursor: pointer;
+  margin-top: -15px;
+  margin-bottom: -15px;
+}
+
+.slider::-moz-range-thumb {
+  height: 50px; 
+  width: 16px;
+  border-radius: 3px;
+  background: PaleGreen;
+  cursor: pointer;
+  margin-top: -15px;
+  margin-bottom: -15px;
 }
