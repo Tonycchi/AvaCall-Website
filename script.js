@@ -31,38 +31,42 @@ window.onresize = function() {
 
 let button1 = document.createElement("button");
 button1.innerHTML = "Click Me1";
+button1.classList.add("button");
 document.getElementById("button1").appendChild(button1);
 
 let button2 = document.createElement("button");
 button2.innerHTML = "Click Me2";
+button2.classList.add("button");
 document.getElementById("button2").appendChild(button2);
 
 let button3 = document.createElement("button");
 button3.innerHTML = "Click Me3";
+button3.classList.add("button");
 document.getElementById("button3").appendChild(button3);
 
 let button4 = document.createElement("button");
 button4.innerHTML = "Click Me4";
+button4.classList.add("button");
 document.getElementById("button4").appendChild(button4);
 
 let slider1 = document.createElement("input");
 slider1.setAttribute("type", "range");
-slider1.style.transform = "rotate(270deg)";
+slider1.classList.add("slider");
 document.getElementById("slider1").appendChild(slider1);
 
 let slider2 = document.createElement("input");
 slider2.setAttribute("type", "range");
-slider2.style.transform = "rotate(270deg)";
+slider2.classList.add("slider");
 document.getElementById("slider2").appendChild(slider2);
 
 let slider3 = document.createElement("input");
 slider3.setAttribute("type", "range");
-slider3.style.transform = "rotate(270deg)";
+slider3.classList.add("slider");
 document.getElementById("slider3").appendChild(slider3);
 
 let slider4 = document.createElement("input");
 slider4.setAttribute("type", "range");
-slider4.style.transform = "rotate(270deg)";
+slider4.classList.add("slider");
 document.getElementById("slider4").appendChild(slider4);
 
 // Function when connecting to the WebSocket Server

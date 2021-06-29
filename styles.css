@@ -15,47 +15,44 @@
 	position: absolute;
 	grid-template-columns: auto auto;
 	grid-row-gap: 50%;
-	width: 15%;
+	width: 20%;
 	top: 10%;
-	right: 10%;
+	right: 6%;
 }
 
 #grid-container-sliders {
 	display: grid;
 	position: absolute;
-	grid-template-columns: auto auto auto auto;
-	width: 10%;
-	bottom: 25%;
-	left: 5%
+	bottom: -10%;
+	left: 15%;
+	transform: rotate(270deg);
+}
+
+#grid-container-sliders div {
+	aspect-ratio: 1;
+}
+
+.grid-item-slider {
+	display: flex;
+	justify-content: center; 
+  	align-items: center;
 }
 
 #joystick {
 	visibility: visible;
 } 
 
-#button {
-	visibility: visible;
-	height: 5%;
-	width: 10%;
+.button {
 	font-size: 2vmin;
-	position: fixed;
-	right: 10.75%;
-	top: 10%;
 	background-color: PaleGreen;
 	border-color: PaleGreen;
 	border-radius: 10px;
 }
 
 .slider {
-	visibility: visible;
 	-webkit-appearance: none;
-	height: 2%;
-	width: 15%;
-	position: fixed;
-	right: 8%;
-	top: 35%;
+	width: 17vmin;
 	background: #d3d3d3;
-	transform: rotate(270deg);
 }
 
 .slider::-webkit-slider-thumb {
