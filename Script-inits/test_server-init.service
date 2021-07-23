@@ -1,0 +1,8 @@
+[Unit]
+Description=start nodejs server
+
+[Service]
+ExecStart=/root/node_modules/ws/test_server-init.sh
+
+[Install]
+WantedBy=multi-user.target

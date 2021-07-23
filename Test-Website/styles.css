@@ -1,0 +1,67 @@
+.jitsi-window {
+	margin: 0 auto;
+	display: block;
+}
+
+#container-control-elements {
+	visibility: hidden;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+}
+
+#grid-container-buttons {
+	display: grid;
+	position: absolute;
+	grid-template-columns: auto auto;
+	grid-row-gap: 50%;
+	width: 20%;
+	top: 10%;
+	right: 6%;
+}
+
+#joystick0 {
+	visibility: hidden;
+} 
+
+#joystick1 {
+	visibility: hidden;
+}
+
+.button {
+	font-size: 2vmin;
+	background-color: PaleGreen;
+	border-color: PaleGreen;
+	border-radius: 10px;
+}
+
+.slider {
+	-webkit-appearance: none;
+	height: 0.75vmax;
+	width: 20vmin;
+	position: absolute;
+	left: 2%;
+	bottom: 30%;
+	background: #d3d3d3;
+}
+
+.slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	height: 50px;
+	width: 16px;
+	border-radius: 3px;
+	background: PaleGreen;
+	cursor: pointer;
+	margin-top: -15px;
+	margin-bottom: -15px;
+}
+
+.slider::-moz-range-thumb {
+	height: 50px; 
+	width: 16px;
+	border-radius: 3px;
+	background: PaleGreen;
+	cursor: pointer;
+	margin-top: -15px;
+	margin-bottom: -15px;
+}
