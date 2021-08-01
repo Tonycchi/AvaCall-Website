@@ -4,7 +4,7 @@ var buttonClicked = false;
 var buttonClickedID;
 var controlElements = [];
 var joystickIDs = [];
-
+var meetingId;
 // Create the joystick when opening the website
 // size of the joystick varies by your screen size
 // capValue is a limit for pc users
@@ -46,114 +46,129 @@ window.onresize = function() {
 };
 
 // Function when connecting to the WebSocket Server
-// Send an identification message to tell the WebSocket Server with which Client it is connected
 ws.onopen = function() {
-	ws.send("site:" + window.location.pathname.split('/')[1]);
-	console.log("site:" + window.location.pathname.split('/')[1]);
+	idSubmitted();
 };
 
 // Function when receiving messages by the WebSocket Server
 // Set the source of the iFrame to enter the jitsi call
 // Enables the joystick only for people who enter the jitsi call
 ws.onmessage = function (evt) {
-	messageArguments = evt.data.split(':');
-	url = messageArguments[0];
-	console.log(url);
-	document.getElementById("ifrm").src = "https://" + url + window.location.pathname;
-	controlElements = messageArguments[1].split('|');
-	let joystickCounter = 0;
-	let sliderCounter = 0;
-	let buttonCounter = 0;
-	for (i=0; i<controlElements.length; i++) {
-		let id;
-		switch (controlElements[i]) {
-			case "joystick":
-				id = i;
-				joystickIDs.push(id);
-				console.log("Joystick: " + id);
-				optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
-				capValue = (screen.height > screen.width) ? screen.height : screen.width;
-				bottomPercent = '43%';
-				if (capValue > 1400) {
-					optimalSize = 1200 * optimalSize / capValue;
-					bottomPercent = '25%';
-				}
-				if (joystickCounter == 0) {
-					options = {
-						zone: document.getElementById('joystick' + joystickCounter),
-						mode: 'static',
-						position: {right: '27%', bottom: bottomPercent},
-						color: 'SpringGreen',
-						size: optimalSize * joystickSizeFactor
-					};
-					
-					controlElements[i] = setManagerEvents(options, id);
-					document.getElementById('joystick' + joystickCounter).style.visibility = "visible";
-				} else {
-					options = {
-						zone: document.getElementById('joystick' + joystickCounter),
-						mode: 'static',
-						position: {left: '27%', bottom: bottomPercent},
-						color: 'SpringGreen',
-						size: optimalSize * joystickSizeFactor
-					};
-					
-					controlElements[i] = setManagerEvents(options, id);
-					document.getElementById('joystick' + joystickCounter).style.visibility = "visible";
-				}
-				joystickCounter++;
-				break;
-			case "slider":
-				id = i;
-				console.log("Slider: " + id);
-				let slider = document.createElement("input");
-				setSliderAttributes(slider, sliderCounter);
-				document.getElementById("slider" + sliderCounter).appendChild(slider);
-				slider.oninput = function() {
-					console.log(id);
-					console.log("Slider deflection: " + this.value);
-					ws.send(id + ":" + this.value);
-				}
-				
-				slider.onmouseup = function() {
-					this.value = 50;
-					ws.send(id + ":" + this.value);
-				}
-
-				controlElements[i] = slider;
-				sliderCounter++;
-				break;
-			case "button":
-				id = i;
-				console.log("Button: " + id);
-				let button = document.createElement("button");
-				button.innerHTML = "Feuer " + buttonCounter; 
-				button.classList.add("button");
-				document.getElementById("button" + buttonCounter).appendChild(button);
-				button.onmousedown = function() {
-					console.log(id);
-					console.log("Button activity: " + 1);
-					document.getElementById('container-control-elements').style.visibility = "visible";
-					ws.send(id + ":" + 1);
-					buttonClicked = true;
-					buttonClickedID = id;
-				}
-				
-				window.addEventListener('mouseup', function(event){
-					if(buttonClicked){
-						console.log("Button activity: " + 0);
-						document.getElementById('container-control-elements').style.visibility = "hidden";
-						ws.send(buttonClickedID + ":" + 0);
-						buttonClicked = false;
+	console.log("received: "+evt.data);
+	if(evt.data.startsWith("INVALID")){
+		document.getElementById('notConnected').style.display = 'block';
+		document.getElementById('connected').style.display = 'none';
+		document.getElementById('meetingIdInput').value = meetingId;
+		document.getElementById('errorMessageField').innerHTML = "Die angegebene Kennnummer ist falsch. Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut!";
+		console.log("The id doesn't exist in server.js");
+	}else{//goto to the videocall site
+		document.getElementById('connected').style.display = 'block';
+		document.getElementById('notConnected').style.display = 'none';
+		messageArguments = evt.data.split(':');
+		url = messageArguments[0];
+		console.log("source for videocall: "+"https://" + url + "/" + meetingId);
+		controlElements = messageArguments[1].split('|');
+		let joystickCounter = 0;
+		let sliderCounter = 0;
+		let buttonCounter = 0;
+		for (i=0; i<controlElements.length; i++) {
+			let id;
+			switch (controlElements[i]) {
+				case "joystick":
+					id = i;
+					joystickIDs.push(id);
+					console.log("Joystick: " + id);
+					optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
+					capValue = (screen.height > screen.width) ? screen.height : screen.width;
+					bottomPercent = '43%';
+					if (capValue > 1400) {
+						optimalSize = 1200 * optimalSize / capValue;
+						bottomPercent = '25%';
 					}
-				})
+					if (joystickCounter == 0) {
+						options = {
+							zone: document.getElementById('joystick' + joystickCounter),
+							mode: 'static',
+							position: {right: '27%', bottom: bottomPercent},
+							color: 'SpringGreen',
+							size: optimalSize * joystickSizeFactor
+						};
+						
+						controlElements[i] = setManagerEvents(options, id);
+						document.getElementById('joystick' + joystickCounter).style.visibility = "visible";
+					} else {
+						options = {
+							zone: document.getElementById('joystick' + joystickCounter),
+							mode: 'static',
+							position: {left: '27%', bottom: bottomPercent},
+							color: 'SpringGreen',
+							size: optimalSize * joystickSizeFactor
+						};
+						
+						controlElements[i] = setManagerEvents(options, id);
+						document.getElementById('joystick' + joystickCounter).style.visibility = "visible";
+					}
+					joystickCounter++;
+					break;
+				case "slider":
+					id = i;
+					console.log("Slider: " + id);
+					let slider = document.createElement("input");
+					setSliderAttributes(slider, sliderCounter);
+					document.getElementById("slider" + sliderCounter).appendChild(slider);
+					slider.oninput = function() {
+						console.log(id);
+						console.log("Slider deflection: " + this.value);
+						ws.send(id + ":" + this.value);
+					}
+					
+					slider.onmouseup = function() {
+						this.value = 50;
+						ws.send(id + ":" + this.value);
+					}
 
-				controlElements[i] = button;
-				buttonCounter++;
-				break;
-			default:
-				//TODO: Error message (no control elements)
+					controlElements[i] = slider;
+					sliderCounter++;
+					break;
+				case "button":
+					id = i;
+					console.log("Button: " + id);
+					let button = document.createElement("button");
+					button.innerHTML = "Feuer " + buttonCounter; 
+					button.classList.add("button");
+					document.getElementById("button" + buttonCounter).appendChild(button);
+					button.onmousedown = function() {
+						console.log(id);
+						console.log("Button activity: " + 1);
+						document.getElementById('container-control-elements').style.visibility = "visible";
+						ws.send(id + ":" + 1);
+						buttonClicked = true;
+						buttonClickedID = id;
+					}
+					
+					window.addEventListener('mouseup', function(event){
+						if(buttonClicked){
+							console.log("Button activity: " + 0);
+							document.getElementById('container-control-elements').style.visibility = "hidden";
+							ws.send(buttonClickedID + ":" + 0);
+							buttonClicked = false;
+						}
+					})
+
+					controlElements[i] = button;
+					buttonCounter++;
+					break;
+				default:
+					//TODO: Error message (no control elements)
+			}
 		}
+		
+		while (document.readyState != "complete") {
+			 
+		}	 
+		
+		document.getElementById("ifrm").src = "https://" + url + "/" + meetingId;
+		
 	}
 };
 
@@ -196,4 +211,16 @@ function setSliderAttributes(slider, sliderCounter) {
 	slider.classList.add("slider");
 	slider.style.transform = "rotate(270deg)";
 	slider.style.left = (sliderCounter * 9 + slider.style.left) + "%";
+}
+
+//check if there is an meetingID parameter and if go to that site
+function idSubmitted(){
+	let parameters = window.location.search.substr(1).split("&");
+	console.log("parameters:" + parameters);
+	meetingId = parameters[0].split("=")[1];
+	if(meetingId != null){ //if the site was started with from app generated link
+		console.log("meetingId:" + meetingId);
+		ws.send("site:" + meetingId); // Send an identification message to tell the WebSocket Server with which Client it is connected
+		console.log("send: site:" + meetingId);
+	}
 }
