@@ -225,8 +225,8 @@ function setManagerEvents(options, id) {
 function buttonStallDetected(id){
 	if(!stallDetected){
 		let pressedButton = controlElements[id];
-		pressedButton.style.backgroundColor = "Red";
-		pressedButton.style.borderColor = "Red";
+		//pressedButton.style.backgroundColor = "Red";
+		//pressedButton.style.borderColor = "Red";
 		stallIsDetected();
 	}
 }
@@ -234,8 +234,8 @@ function buttonStallDetected(id){
 function buttonStallEnded(id){
 	if(stallDetected){
 		let button = controlElements[id];
-		button.style.backgroundColor = "PaleGreen";
-		button.style.borderColor = "PaleGreen";
+		//button.style.backgroundColor = "PaleGreen";
+		//button.style.borderColor = "PaleGreen";
 		stallIsEnded();
 	}
 }
@@ -243,7 +243,7 @@ function buttonStallEnded(id){
 function sliderStallDetected(id){ 
 	if(!stallDetected){
 		let slider = controlElements[id];
-		slider.style.background = "Red";
+		//slider.style.background = "Red";
 		stallIsDetected();
 	}
 }
@@ -251,7 +251,7 @@ function sliderStallDetected(id){
 function sliderStallEnded(id){
 	if(stallDetected){
 		let slider = controlElements[id];
-		slider.style.background = "LightGrey";
+		//slider.style.background = "LightGrey";
 		stallIsEnded();
 	}
 }
