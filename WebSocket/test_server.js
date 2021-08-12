@@ -37,6 +37,13 @@ wss.on('connection', function(ws, request, client) {
 			//send room-id to app
             appClients[id].send('id:' + id);
             
+			appClients[id].on('message', function(m) {
+                //if web is still connected -> send
+				if (webClients[this.myid] != null) {
+					webClients[this.myid].send(m);  
+				}
+            });
+			
             appClients[id].on('close', function() {
                 removeSession(this.myid);//session is just removed, when there is no app client -> meaning session is just removed when there is no app and web client after this method
                 delete appClients[id];
