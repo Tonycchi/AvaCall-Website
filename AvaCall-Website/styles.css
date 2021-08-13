@@ -3,13 +3,102 @@
 	display: block;
 }
 
-#container-joystick {
+#connected{
+	display: none;
+}
+
+#notConnected{
+	display: block;
+}
+
+#container-control-elements {
 	visibility: hidden;
 	position: fixed;
 	width: 100%;
 	height: 100%;
 }
 
-#joystick {
+#grid-container-buttons {
+	display: grid;
+	position: absolute;
+	grid-template-columns: auto auto;
+	grid-row-gap: 50%;
+	width: 20%;
+	top: 10%;
+	right: 6%;
+}
+
+#joystick0 {
 	visibility: hidden;
 } 
+
+#joystick1 {
+	visibility: hidden;
+}
+
+
+#mainFrame{
+	border: 3px solid LightBlue;
+}
+
+#errorMessageField{
+	font-weight: bold;
+}
+
+.center{
+	vertical-align: middle;  
+	text-align: center;
+}
+
+.border {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255,0,0,0.2); /* Black background with opacity */
+  z-index: 1; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+  pointer-events: none;
+}
+
+.button {
+	font-size: 2vmin;
+	background-color: PaleGreen;
+	border-color: PaleGreen;
+	border-radius: 10px;
+}
+
+.slider {
+	-webkit-appearance: none;
+	height: 0.75vmax;
+	width: 20vmin;
+	position: absolute;
+	left: 2%;
+	bottom: 30%;
+	background: LightGray;
+}
+
+.slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	height: 50px;
+	width: 16px;
+	border-radius: 3px;
+	background: PaleGreen;
+	cursor: pointer;
+	margin-top: -15px;
+	margin-bottom: -15px;
+}
+
+.slider::-moz-range-thumb {
+	height: 50px; 
+	width: 16px;
+	border-radius: 3px;
+	background: PaleGreen;
+	cursor: pointer;
+	margin-top: -15px;
+	margin-bottom: -15px;
+}
