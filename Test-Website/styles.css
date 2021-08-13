@@ -3,6 +3,14 @@
 	display: block;
 }
 
+#connected{
+	display: none;
+}
+
+#notConnected{
+	display: block;
+}
+
 #container-control-elements {
 	visibility: hidden;
 	position: fixed;
@@ -28,6 +36,35 @@
 	visibility: hidden;
 }
 
+
+#mainFrame{
+	border: 3px solid LightBlue;
+}
+
+#errorMessageField{
+	font-weight: bold;
+}
+
+.center{
+	vertical-align: middle;  
+	text-align: center;
+}
+
+.border {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255,0,0,0.2); /* Black background with opacity */
+  z-index: 1; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+  pointer-events: none;
+}
+
 .button {
 	font-size: 2vmin;
 	background-color: PaleGreen;
@@ -42,7 +79,7 @@
 	position: absolute;
 	left: 2%;
 	bottom: 30%;
-	background: #d3d3d3;
+	background: LightGray;
 }
 
 .slider::-webkit-slider-thumb {

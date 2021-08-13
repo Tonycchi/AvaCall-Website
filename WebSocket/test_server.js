@@ -75,7 +75,8 @@ wss.on('connection', function(ws, request, client) {
                 ws.send(jitsiURLs[id] + ":" + controlElements[id]);
             //when room-id doesn't exist 
 			}else{
-				//TODO: what to do if id is invalid
+				ws.send("INVALID: Id "+id+" is invalid!");
+				console.log("INVALID: Id "+id+" is invalid!");
 			}	
         }
         if (!message.includes(";")) console.log(countProperties(appClients) + ", " + countProperties(webClients))
