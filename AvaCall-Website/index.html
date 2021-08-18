@@ -1,16 +1,48 @@
 <!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <html>
 <head>
     <title>AvaCall</title>
     <link rel="stylesheet" href="styles.css">
-</head>
+	
+</head> 
 <body>
-	<div class="container-iframe">
-		<iframe id="ifrm" class="jitsi-window" src="https://meet.jit.si" allow="camera;microphone" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;"></iframe>
-    </div>
-	<div id="container-joystick"></div>
-	<div id="joystick"></div>
-	<script src="nipplejs.js"></script>	
 	<script src="script.js"></script>
+	<script src="nipplejs.js"></script>	
+	
+	<div id="notConnected">
+		<div class="center" id="mainFrame"> 
+			<h2> Willkommen bei AvaCall! </h2>
+			<p >Sie wollen einer Konferenz beitreten? Öffnen Sie entweder den Link, der Ihnen von Ihrem Partner zugeschickt wurde oder geben Sie die Kennnummer zu der entsprechenden Konferenz an. Diese Kennnummer findet Ihr Partner unten links in der App.</p>
+			<p id="errorMessageField"> </p>
+			
+			<form onsubmit="idSubmitted()">
+				<label for="meetingId">Kennnummer:</label>
+				<input maxlength=10 type="text" id="meetingIdInput" name="meetingId">
+				<input type="submit" value="Beitreten" >
+			</form>
+			<br>
+		</div>
+	</div>
+	<div id="connected">
+		<div class="border" id="border"></div>
+		<div class="container-iframe">
+			<iframe id="ifrm" class="jitsi-window" src="https://meet.jit.si" allow="camera;microphone" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;"></iframe>
+		</div>
+		<div id="container-control-elements"></div>
+		<div id="joystick0"></div>
+		<div id="joystick1"></div>
+		<div id="grid-container-buttons">
+			<div class="grid-item-button" id="button0"></div>
+			<div class="grid-item-button" id="button1"></div>
+			<div class="grid-item-button" id="button2"></div>
+			<div class="grid-item-button" id="button3"></div>
+		</div>
+		<div id="slider0"></div>
+		<div id="slider1"></div>
+		<div id="slider2"></div>
+		<div id="slider3"></div>
+	<div>
+	
 </body>
 </html>
