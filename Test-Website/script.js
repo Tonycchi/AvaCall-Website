@@ -110,8 +110,10 @@ ws.onmessage = function (evt) {
 		stallArguments = evt.data.split(':');
 		if(stallArguments[1]=="start"){
 			stallDetectedForType(stallArguments[2], stallArguments[3]);
-		}else{
+		}else if(stallArguments[1]=="stop"){
 			stallEndedForType(stallArguments[2], stallArguments[3]);
+		}else{
+			console.log("STALL sended but invalid second Argument: "+evt.data);		
 		}
 	} else if(evt.data.startsWith("DISCONNECT")) {
 		document.getElementById('notConnected').style.display = 'block';
