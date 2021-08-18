@@ -38,7 +38,7 @@ wss.on('connection', function(ws, request, client) {
             appClients[id].send('id:' + id);
             
 			appClients[id].on('message', function(m) {
-                //if web is still connected -> send
+                //if web is still connected -> send (probably stall)
 				if (webClients[this.myid] != null) {
 					webClients[this.myid].send(m);  
 				}
@@ -79,7 +79,7 @@ wss.on('connection', function(ws, request, client) {
 				
 			//when there is already one web client connected 
             } else if (appClients[id] != null) {
-                ws.send(jitsiURLs[id] + ":" + controlElements[id]);
+                ws.send("FULL:" + jitsiURLs[id] + ":" + id);
             //when room-id doesn't exist 
 			}else{
 				ws.send("INVALID: Id "+id+" is invalid!");
@@ -98,7 +98,13 @@ function removeSession(id) {
         if (index > -1) {
             IDs.splice(index, 1);
         }
-    }
+    }else if(appClients[id] != null){ //web disconnected before app
+		appClients[id].send("DISCONNECT");
+	}else if(webClients[id] != null){//app disconnected before web
+		webClients[id].send("DISCONNECT");
+		delete webClients[id]; //delete web clients entry because if app disconnects web can't do anything and is redirected to start page
+		removeSession(id);
+	}
     console.log(countProperties(appClients) + ", " + countProperties(webClients));
 }
 
