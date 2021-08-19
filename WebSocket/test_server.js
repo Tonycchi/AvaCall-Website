@@ -45,8 +45,8 @@ wss.on('connection', function(ws, request, client) {
             });
 			
             appClients[id].on('close', function() {
-                removeSession(this.myid);//session is just removed, when there is no app client -> meaning session is just removed when there is no app and web client after this method
-                delete appClients[id];
+				delete appClients[id];
+                removeSession(this.myid);
             });
 			
 		//communicating with web
@@ -73,8 +73,8 @@ wss.on('connection', function(ws, request, client) {
                 });
 				
                 webClients[id].on('close', function() {
-                    removeSession(this.myid); //session is just removed, when there is no app client -> meaning session is just removed when there is no app and web client after this method
-                    delete webClients[this.myid];
+					delete webClients[this.myid];
+                    removeSession(this.myid); //session is just removed when there is no app and web client
                 });
 				
 			//when there is already one web client connected 
@@ -92,18 +92,23 @@ wss.on('connection', function(ws, request, client) {
 
 //removes room-id from list, if there is no app or no web client
 function removeSession(id) {
-    if (appClients[id] == null || webClients[id] == null) {
+    if (appClients[id] == null && webClients[id] == null) {
+		console.log("session "+id+" removed");
         delete jitsiURLs[id];
         var index = IDs.indexOf(id);
         if (index > -1) {
             IDs.splice(index, 1);
         }
-    }else if(appClients[id] != null){ //web disconnected before app
+    }else if(appClients[id] != null && webClients[id] == null){ //web disconnected before app
+		console.log("web "+id+" disconnected");
 		appClients[id].send("DISCONNECT");
-	}else if(webClients[id] != null){//app disconnected before web
+	}else if(webClients[id] != null && appClients[id] == null ){//app disconnected before web
+		console.log("app "+id+" disconnected");
 		webClients[id].send("DISCONNECT");
 		delete webClients[id]; //delete web clients entry because if app disconnects web can't do anything and is redirected to start page
 		removeSession(id);
+	}else{
+		console.log("This should not happen!");
 	}
     console.log(countProperties(appClients) + ", " + countProperties(webClients));
 }
