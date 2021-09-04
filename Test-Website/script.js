@@ -121,23 +121,27 @@ ws.onmessage = function (evt) {
 		document.getElementById('meetingIdInput').value = "";
 		document.getElementById('errorMessageField').innerHTML = "Ihr Partner hat die Verbindung geschlossen. Sie können eine neue Kennnummer eingeben.";
 		console.log("App disconnected");
-	} else{//goto to the videocall site
+	} else{ //goto to the videocall site
 		document.getElementById('connected').style.display = 'block';
 		document.getElementById('notConnected').style.display = 'none';
+		// split our sent message from the app
 		messageArguments = evt.data.split(':');
 		url = messageArguments[0];
 		console.log("source for videocall: "+"https://" + url + "/" + meetingId);
+		// split the control elements in an array
 		controlElements = messageArguments[1].split('|');
 		let joystickCounter = 0;
 		let sliderCounter = 0;
 		let buttonCounter = 0;
 		for (i=0; i<controlElements.length; i++) {
+			// saves the id for each control element
 			let id;
 			switch (controlElements[i]) {
 				case "joystick":
 					id = i;
 					joystickIDs.push(id);
 					console.log("Joystick: " + id);
+					// create the joystick
 					optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
 					capValue = (screen.height > screen.width) ? screen.height : screen.width;
 					bottomPercent = '43%';
@@ -152,7 +156,9 @@ ws.onmessage = function (evt) {
 						position: {right: right, bottom: bottomPercent},
 						color: 'SpringGreen',
 						size: optimalSize * joystickSizeFactor
-					};						
+					};
+					
+					// set the functions when the joystick is moved
 					controlElements[i] = setManagerEvents(options, id);
 					document.getElementById('joystick' + joystickCounter).style.visibility = "visible";
 					joystickCounter++;
@@ -160,20 +166,20 @@ ws.onmessage = function (evt) {
 				case "slider":
 					id = i;
 					console.log("Slider: " + id);
+					// create the slider
 					let slider = document.createElement("input");
 					setSliderAttributes(slider, sliderCounter);
 					document.getElementById("slider" + sliderCounter).appendChild(slider);
+					// set the functions when the slider is moved
 					slider.oninput = function() {
 						console.log(id);
 						console.log("Slider deflection: " + this.value);
 						ws.send(id + ":" + this.value);
-						sliderStallDetected(id);
 					}
 					
 					slider.onmouseup = function() {
 						this.value = 50;
 						ws.send(id + ":" + this.value);
-						sliderStallEnded(id);
 					}
 
 					controlElements[i] = slider;
@@ -182,10 +188,12 @@ ws.onmessage = function (evt) {
 				case "button":
 					id = i;
 					console.log("Button: " + id);
+					// create the button
 					let button = document.createElement("button");
 					button.innerHTML = "Feuer " + buttonCounter; 
 					button.classList.add("button");
 					document.getElementById("button" + buttonCounter).appendChild(button);
+					// set the functions when the button is clicked
 					button.onmousedown = function() {
 						console.log(id);
 						console.log("Button "+id+" activity: " + 1);
@@ -193,7 +201,6 @@ ws.onmessage = function (evt) {
 						ws.send(id + ":" + 1);
 						buttonClicked = true;
 						buttonClickedID = id;
-						buttonStallDetected(id);
 					}
 					
 					window.addEventListener('mouseup', function(event){
@@ -202,7 +209,6 @@ ws.onmessage = function (evt) {
 							document.getElementById('container-control-elements').style.visibility = "hidden";
 							ws.send(buttonClickedID + ":" + 0);
 							buttonClicked = false;
-							buttonStallEnded(buttonClickedID);
 						}
 					})
 
@@ -237,7 +243,6 @@ function setManagerEvents(options, id) {
 		console.log(id);
 		console.log(angle + ";" + distance);
 		ws.send(id + ":" + angle + ";" + distance);
-		joystickStallDetected(id);
 		console.log("send");
 	});
 	
@@ -246,7 +251,6 @@ function setManagerEvents(options, id) {
 	// Sends a stop signal so the Mindstorm doesn't continue to move
 	manager.on('end', function(evt) {
 		document.getElementById('container-control-elements').style.visibility = "hidden";
-		joystickStallEnded(id);
 		ws.send(id + ":0;0");
 	});
 	
