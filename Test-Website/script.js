@@ -1,6 +1,7 @@
 var url;
 var ws = new WebSocket("wss://test.avatar.mintclub.org:22223"); //socket connection to our website
 var buttonClicked = false; // boolean if a button is clicked
+var sliderClicked = false;
 var buttonClickedID; // saves the id in combination with buttonClicked boolean to determine which button is clicked
 var controlElements = []; // save all created control elements in an array
 var joystickIDs = [];
@@ -171,15 +172,26 @@ ws.onmessage = function (evt) {
 					setSliderAttributes(slider, sliderCounter);
 					document.getElementById("slider" + sliderCounter).appendChild(slider);
 					// set the functions when the slider is moved
-					slider.oninput = function() {
-						console.log(id);
-						console.log("Slider deflection: " + this.value);
-						ws.send(id + ":" + this.value);
+					slider.onmousemove = function () {
+						if (sliderClicked) {
+							console.log(id);
+							console.log("Slider deflection: " + this.value);
+							ws.send(id + ":" + this.value);
+						}
 					}
+					slider.onmousedown = function () {
+						sliderClicked = true;
+					}
+					// slider.oninput = function() {
+					// 	console.log(id);
+					// 	console.log("Slider deflection: " + this.value);
+					// 	ws.send(id + ":" + this.value);
+					// }
 					
 					slider.onmouseup = function() {
 						this.value = 50;
 						ws.send(id + ":" + this.value);
+						sliderClicked = false;
 					}
 
 					controlElements[i] = slider;
