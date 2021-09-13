@@ -1,11 +1,13 @@
 var url;
-var ws = new WebSocket("wss://test.avatar.mintclub.org:22223"); //socket connection to our website
-var buttonClicked = false;
-var buttonClickedID;
-var controlElements = [];
+var ws = new WebSocket("wss://avatar.mintclub.org:22222"); //socket connection to our website
+var buttonClicked = false; // boolean if a button is clicked
+var sliderClicked = false;
+var buttonClickedID; // saves the id in combination with buttonClicked boolean to determine which button is clicked
+var controlElements = []; // save all created control elements in an array
 var joystickIDs = [];
 var meetingId;
 var stallDetected = false;
+
 // Create the joystick when opening the website
 // size of the joystick varies by your screen size
 // capValue is a limit for pc users
@@ -14,15 +16,41 @@ var joystickSizeFactor = 0.25;
 // Function when the window size changes
 // When resizing the window we have to adjust the size of the joystick (destroy old one and create new one)
 window.onresize = function() {
-	for (let i=0; joystickIDs.length; i++) {
+	/*for (let i=0; joystickIDs.length; i++) {
 		console.log("Joystick number:"+i+" joystick id:"+joystickIDs[i]);
 		if (i == 0) {
 			repaintJoystick(joystickIDs[i], true, 'SpringGreen');
 		} else {
 			repaintJoystick(joystickIDs[i], false, 'SpringGreen');
 		}
+	}*/
+	optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
+	capValue = (screen.height > screen.width) ? screen.height : screen.width;
+	bottomPercent = '43%';
+	if (capValue > 1400) {
+		optimalSize = 1200 * optimalSize / capValue;
+		bottomPercent = '25%';
 	}
+	//the back of the joystick/s
+	let back = document.getElementsByClassName("back");
+	// the front of the joystick/s
+	let front = document.getElementsByClassName("front");
+	setNewSize(back, optimalSize, 1);
+	setNewSize(front, optimalSize, 3);
 };
+
+// scales the joystick based on windowSize 
+// element is front or back of the joystick
+// optimalSize is the size from the joystick
+// ratio front smaller than back so we have to scale it differently(front is 3 times smaller than back)
+function setNewSize(element, optimalSize, ratio){
+	for(i = 0; i < element.length; i++){
+		element[i].style.width = (optimalSize * joystickSizeFactor) / ratio + "px";
+		element[i].style.height = (optimalSize * joystickSizeFactor) / ratio + "px";
+		element[i].style.marginTop = ((optimalSize * joystickSizeFactor) / ratio) / -2 + "px";
+		element[i].style.marginLeft = ((optimalSize * joystickSizeFactor) / ratio) / -2 + "px";
+	}
+}
 
 function repaintJoystick(id, right, colorValue){
 	optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
@@ -65,13 +93,13 @@ ws.onopen = function() {
 // Enables the joystick only for people who enter the jitsi call
 ws.onmessage = function (evt) {
 	console.log("received: "+evt.data);		
-	if(evt.data.startsWith("INVALID")){
+	if (evt.data.startsWith("INVALID")) {
 		document.getElementById('notConnected').style.display = 'block';
 		document.getElementById('connected').style.display = 'none';
 		document.getElementById('meetingIdInput').value = meetingId;
 		document.getElementById('errorMessageField').innerHTML = "Die angegebene Kennnummer ist falsch. Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut!";
 		console.log("The id doesn't exist in server.js");
-	} else if(evt.data.startsWith("FULL:")){
+	} else if (evt.data.startsWith("FULL:")) {
 		document.getElementById('connected').style.display = 'block';
 		document.getElementById('notConnected').style.display = 'none';
 		messageArguments = evt.data.split(':');
@@ -79,87 +107,91 @@ ws.onmessage = function (evt) {
 		console.log("FULL: " + "https://" + url + "/" + meetingId);		
 		document.getElementById("ifrm").src = "https://" + url + "/" + meetingId;
 
-	}else if(evt.data.startsWith("STALL:")){
+	} else if (evt.data.startsWith("STALL:")) {
 		stallArguments = evt.data.split(':');
 		if(stallArguments[1]=="start"){
 			stallDetectedForType(stallArguments[2], stallArguments[3]);
-		}else{
+		}else if(stallArguments[1]=="stop"){
 			stallEndedForType(stallArguments[2], stallArguments[3]);
+		}else{
+			console.log("STALL received but invalid second Argument: "+evt.data);		
 		}
-	}else if(evt.data.startsWith("DISCONNECT")){
+	} else if(evt.data.startsWith("DISCONNECT")) {
 		document.getElementById('notConnected').style.display = 'block';
 		document.getElementById('connected').style.display = 'none';
 		document.getElementById('meetingIdInput').value = "";
 		document.getElementById('errorMessageField').innerHTML = "Ihr Partner hat die Verbindung geschlossen. Sie können eine neue Kennnummer eingeben.";
 		console.log("App disconnected");
-	}else{//goto to the videocall site
+	} else{ //goto to the videocall site
 		document.getElementById('connected').style.display = 'block';
 		document.getElementById('notConnected').style.display = 'none';
+		// split our sent message from the app
 		messageArguments = evt.data.split(':');
 		url = messageArguments[0];
 		console.log("source for videocall: "+"https://" + url + "/" + meetingId);
+		// split the control elements in an array
 		controlElements = messageArguments[1].split('|');
 		let joystickCounter = 0;
 		let sliderCounter = 0;
 		let buttonCounter = 0;
 		for (i=0; i<controlElements.length; i++) {
+			// saves the id for each control element
 			let id;
 			switch (controlElements[i]) {
 				case "joystick":
 					id = i;
 					joystickIDs.push(id);
 					console.log("Joystick: " + id);
+					// create the joystick
 					optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
 					capValue = (screen.height > screen.width) ? screen.height : screen.width;
 					bottomPercent = '43%';
 					let right = (27 + joystickCounter * 46) + "%";
-					console.log("XDDD" + right);
 					if (capValue > 1400) {
 						optimalSize = 1200 * optimalSize / capValue;
 						bottomPercent = '25%';
 					}
-					if (joystickCounter == 0) {
-						options = {
-							zone: document.getElementById('joystick' + joystickCounter),
-							mode: 'static',
-							position: {right: right, bottom: bottomPercent},
-							color: 'SpringGreen',
-							size: optimalSize * joystickSizeFactor
-						};
-						
-						controlElements[i] = setManagerEvents(options, id);
-						document.getElementById('joystick' + joystickCounter).style.visibility = "visible";
-					} else {
-						options = {
-							zone: document.getElementById('joystick' + joystickCounter),
-							mode: 'static',
-							position: {right: right, bottom: bottomPercent},
-							color: 'SpringGreen',
-							size: optimalSize * joystickSizeFactor
-						};
-						
-						controlElements[i] = setManagerEvents(options, id);
-						document.getElementById('joystick' + joystickCounter).style.visibility = "visible";
-					}
+					options = {
+						zone: document.getElementById('joystick' + joystickCounter),
+						mode: 'static',
+						position: {right: right, bottom: bottomPercent},
+						color: 'SpringGreen',
+						size: optimalSize * joystickSizeFactor
+					};
+					
+					// set the functions when the joystick is moved
+					controlElements[i] = setManagerEvents(options, id);
+					document.getElementById('joystick' + joystickCounter).style.visibility = "visible";
 					joystickCounter++;
 					break;
 				case "slider":
 					id = i;
 					console.log("Slider: " + id);
+					// create the slider
 					let slider = document.createElement("input");
 					setSliderAttributes(slider, sliderCounter);
 					document.getElementById("slider" + sliderCounter).appendChild(slider);
-					slider.oninput = function() {
-						console.log(id);
-						console.log("Slider deflection: " + this.value);
-						ws.send(id + ":" + this.value);
-						sliderStallDetected(id);
+					// set the functions when the slider is moved
+					slider.onmousemove = function () {
+						if (sliderClicked) {
+							console.log(id);
+							console.log("Slider deflection: " + this.value);
+							ws.send(id + ":" + this.value);
+						}
 					}
+					slider.onmousedown = function () {
+						sliderClicked = true;
+					}
+					// slider.oninput = function() {
+					// 	console.log(id);
+					// 	console.log("Slider deflection: " + this.value);
+					// 	ws.send(id + ":" + this.value);
+					// }
 					
 					slider.onmouseup = function() {
 						this.value = 50;
 						ws.send(id + ":" + this.value);
-						sliderStallEnded(id);
+						sliderClicked = false;
 					}
 
 					controlElements[i] = slider;
@@ -168,10 +200,12 @@ ws.onmessage = function (evt) {
 				case "button":
 					id = i;
 					console.log("Button: " + id);
+					// create the button
 					let button = document.createElement("button");
 					button.innerHTML = "Feuer " + buttonCounter; 
 					button.classList.add("button");
 					document.getElementById("button" + buttonCounter).appendChild(button);
+					// set the functions when the button is clicked
 					button.onmousedown = function() {
 						console.log(id);
 						console.log("Button "+id+" activity: " + 1);
@@ -179,7 +213,6 @@ ws.onmessage = function (evt) {
 						ws.send(id + ":" + 1);
 						buttonClicked = true;
 						buttonClickedID = id;
-						buttonStallDetected(id);
 					}
 					
 					window.addEventListener('mouseup', function(event){
@@ -188,7 +221,6 @@ ws.onmessage = function (evt) {
 							document.getElementById('container-control-elements').style.visibility = "hidden";
 							ws.send(buttonClickedID + ":" + 0);
 							buttonClicked = false;
-							buttonStallEnded(buttonClickedID);
 						}
 					})
 
@@ -223,7 +255,6 @@ function setManagerEvents(options, id) {
 		console.log(id);
 		console.log(angle + ";" + distance);
 		ws.send(id + ":" + angle + ";" + distance);
-		joystickStallDetected(id);
 		console.log("send");
 	});
 	
@@ -232,15 +263,14 @@ function setManagerEvents(options, id) {
 	// Sends a stop signal so the Mindstorm doesn't continue to move
 	manager.on('end', function(evt) {
 		document.getElementById('container-control-elements').style.visibility = "hidden";
-		joystickStallEnded(id);
 		ws.send(id + ":0;0");
 	});
 	
 	return manager;
 };
 
-function stallDetectedForType(type, id){
-	switch(type){
+function stallDetectedForType(type, id) {
+	switch(type) {
 		case "button":
 			buttonStallDetected(id);
 			break;
@@ -253,8 +283,8 @@ function stallDetectedForType(type, id){
 	}
 }
 
-function stallEndedForType(type, id){
-	switch(type){
+function stallEndedForType(type, id) {
+	switch(type) {
 		case "button":
 			buttonStallEnded(id);
 			break;
@@ -267,8 +297,8 @@ function stallEndedForType(type, id){
 	}
 }
 
-function buttonStallDetected(id){
-	if(!stallDetected){
+function buttonStallDetected(id) {
+	if(!stallDetected) {
 		let pressedButton = controlElements[id];
 		pressedButton.style.backgroundColor = "Red";
 		pressedButton.style.borderColor = "Red";
@@ -276,8 +306,8 @@ function buttonStallDetected(id){
 	}
 }
 
-function buttonStallEnded(id){
-	if(stallDetected){
+function buttonStallEnded(id) {
+	if(stallDetected) {
 		let button = controlElements[id];
 		button.style.backgroundColor = "PaleGreen";
 		button.style.borderColor = "PaleGreen";
@@ -285,40 +315,40 @@ function buttonStallEnded(id){
 	}
 }
 
-function sliderStallDetected(id){ 
-	if(!stallDetected){
+function sliderStallDetected(id) { 
+	if(!stallDetected) {
 		let slider = controlElements[id];
 		slider.style.background = "Red";
 		stallIsDetected();
 	}
 }
 
-function sliderStallEnded(id){ 
-	if(stallDetected){
+function sliderStallEnded(id) { 
+	if(stallDetected) {
 		let slider = controlElements[id];
 		slider.style.background = "LightGrey";
 		stallIsEnded(); 
 	}
 }
 
-function joystickStallDetected(id){
-	if(!stallDetected){
+function joystickStallDetected(id) {
+	if(!stallDetected) {
 		changeJoystickColor(id, "Red");		
 		stallIsDetected();
 	}
 }
 
-function joystickStallEnded(id){
-	if(stallDetected){
+function joystickStallEnded(id) {
+	if(stallDetected) {
 		changeJoystickColor(id, "SpringGreen");
 		stallIsEnded();
 	}
 }
 
-function changeJoystickColor(id, color){
+function changeJoystickColor(id, color) {
 	let joystick;
-	for(i = 0; i < joystickIDs.length; i++){ 
-		if(id == joystickIDs[i]){
+	for(i = 0; i < joystickIDs.length; i++) { 
+		if(id == joystickIDs[i]) {
 			joystick = document.getElementById("joystick" + i);
 			break;
 		}
@@ -330,12 +360,12 @@ function changeJoystickColor(id, color){
 
 }
 
-function stallIsDetected(){
+function stallIsDetected() {
 	stallDetected = true;
 	document.getElementById("border").style.display = 'block'; //show overlay
 }
 
-function stallIsEnded(){
+function stallIsEnded() {
 	stallDetected = false;
 	document.getElementById("border").style.display = 'none'; //hide overlay
 }
@@ -348,7 +378,7 @@ function setSliderAttributes(slider, sliderCounter) {
 }
 
 //check if there is an meetingID parameter and if go to that site
-function idSubmitted(){
+function idSubmitted() {
 	let parameters = window.location.search.substr(1).split("&");
 	console.log("parameters:" + parameters);
 	meetingId = parameters[0].split("=")[1];
