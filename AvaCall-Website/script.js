@@ -1,5 +1,5 @@
 var url;
-var ws = new WebSocket("wss://test.avatar.mintclub.org:22223"); //socket connection to our website
+var ws = new WebSocket("wss://avatar.mintclub.org:22222"); //socket connection to our website
 var buttonClicked = false; // boolean if a button is clicked
 var sliderClicked = false;
 var buttonClickedID; // saves the id in combination with buttonClicked boolean to determine which button is clicked
