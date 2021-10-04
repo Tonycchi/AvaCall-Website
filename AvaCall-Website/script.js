@@ -1,5 +1,5 @@
 var url;
-var ws = new WebSocket("wss://avatar.mintclub.org:22222"); //socket connection to our website
+var ws = new WebSocket("wss://test.avatar.mintclub.org:22223"); //socket connection to our website
 var buttonClicked = false; // boolean if a button is clicked
 var sliderClicked = false;
 var buttonClickedID; // saves the id in combination with buttonClicked boolean to determine which button is clicked
@@ -16,39 +16,13 @@ var joystickSizeFactor = 0.25;
 // Function when the window size changes
 // When resizing the window we have to adjust the size of the joystick (destroy old one and create new one)
 window.onresize = function() {
-	/*for (let i=0; joystickIDs.length; i++) {
+	for (let i=0; joystickIDs.length; i++) {
 		console.log("Joystick number:"+i+" joystick id:"+joystickIDs[i]);
 		if (i == 0) {
 			repaintJoystick(joystickIDs[i], true, 'SpringGreen');
 		} else {
 			repaintJoystick(joystickIDs[i], false, 'SpringGreen');
 		}
-	}*/
-	optimalSize = (window.innerHeight > window.innerWidth) ? window.innerHeight : window.innerWidth;
-	capValue = (screen.height > screen.width) ? screen.height : screen.width;
-	bottomPercent = '43%';
-	if (capValue > 1400) {
-		optimalSize = 1200 * optimalSize / capValue;
-		bottomPercent = '25%';
-	}
-	//the back of the joystick/s
-	let back = document.getElementsByClassName("back");
-	// the front of the joystick/s
-	let front = document.getElementsByClassName("front");
-	setNewSize(back, optimalSize, 1);
-	setNewSize(front, optimalSize, 3);
-};
-
-// scales the joystick based on windowSize 
-// element is front or back of the joystick
-// optimalSize is the size from the joystick
-// ratio front smaller than back so we have to scale it differently(front is 3 times smaller than back)
-function setNewSize(element, optimalSize, ratio){
-	for(i = 0; i < element.length; i++){
-		element[i].style.width = (optimalSize * joystickSizeFactor) / ratio + "px";
-		element[i].style.height = (optimalSize * joystickSizeFactor) / ratio + "px";
-		element[i].style.marginTop = ((optimalSize * joystickSizeFactor) / ratio) / -2 + "px";
-		element[i].style.marginLeft = ((optimalSize * joystickSizeFactor) / ratio) / -2 + "px";
 	}
 }
 
@@ -193,6 +167,21 @@ ws.onmessage = function (evt) {
 						ws.send(id + ":" + this.value);
 						sliderClicked = false;
 					}
+					slider.ontouchmove = function () {
+						if (sliderClicked) {
+							console.log(id);
+							console.log("Slider deflection: " + this.value);
+							ws.send(id + ":" + this.value);
+						}
+					}
+					slider.ontouchstart = function () {
+						sliderClicked = true;
+					}
+					slider.ontouchend = function() {
+						this.value = 50;
+						ws.send(id + ":" + this.value);
+						sliderClicked = false;
+					}
 
 					controlElements[i] = slider;
 					sliderCounter++;
@@ -264,6 +253,7 @@ function setManagerEvents(options, id) {
 	manager.on('end', function(evt) {
 		document.getElementById('container-control-elements').style.visibility = "hidden";
 		ws.send(id + ":0;0");
+		console.log(id + ":0;0");
 	});
 	
 	return manager;
